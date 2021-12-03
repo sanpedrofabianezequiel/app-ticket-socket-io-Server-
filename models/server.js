@@ -21,24 +21,33 @@ class Server {
         this.port   = process.env.PORT;
         this.server = http.createServer(this.app);
         this.io     = socketio(this.server,{/*Configurationes */});
+        this.socket = new Sockets(this.io);
     }
 
     middlewares(){
         //Deploy directory public
         this.app.use( express.static(  path.resolve( __dirname ,'../public')) );
+        
         this.app.use( cors());
+        this.app.get('/ultimos',(req,resp)=>{
+
+            resp.json({
+                ok:true,
+                ultimos:this.socket.ticketList.ultimos13
+            })
+        })
     }
 
-    configurarSockets(){
+    /*configurarSockets(){
         new Sockets(this.io);
-    }
+    }*/
 
     execute(){
         //Inicializar Middlewares
         this.middlewares();
         
         //Inicializar Sockets
-        this.configurarSockets();
+        //this.configurarSockets();
 
 
         this.server.listen(this.port,()=>{
